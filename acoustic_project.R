@@ -61,7 +61,12 @@ unwanted_mp3 <- dir(path="tawny_audio", pattern="*.mp3")
 file.remove(paste0("tawny__audio/", unwanted_mp3))
 
 
-male_tawny_wav <- readWave("tawny_audio/Strixaluco-male_197132.wav")
+
+
+#Do I need to be showing an oscillogram and spectogram for the female too?
+
+
+male_tawny_wav <- readWave("tawny_audio/Strixaluco-male_506715.wav")
 male_tawny_wav
 
 oscillo(male_tawny_wav)
@@ -69,6 +74,24 @@ oscillo(male_tawny_wav)
 oscillo(male_tawny_wav, from = 0.59, to = 0.60)
 
 
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male_506715.wav",
+                  Colors = "Colors")
+
+
+
+
+
+
+female_tawny_wav <- readWave("tawny_audio/Strixaluco-female_343923.wav")
+female_tawny_wav
+
+oscillo(female_tawny_wav)
+
+oscillo(female_tawny_wav, from = 0.59, to = 0.60)
+
+
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-female_343923.wav",
+                  Colors = "Colors")
 
 
 
@@ -76,9 +99,11 @@ oscillo(male_tawny_wav, from = 0.59, to = 0.60)
 
 
 
-cuckoo_songs <- query_xc(qword = 'Erithacus rubecula  type:song len:5-25', download = FALSE)
 
-cuckoo_alarm <- query_xc(qword = 'Erithacus rubecula  type:alarm len:5-25', download = FALSE)
+
+
+
+
 
 
 songthrush_songs <- query_xc(qword = 'Turdus philomelos  type:song len:5-25', download = FALSE)
