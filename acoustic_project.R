@@ -61,7 +61,12 @@ unwanted_mp3 <- dir(path="tawny_audio", pattern="*.mp3")
 file.remove(paste0("tawny__audio/", unwanted_mp3))
 
 
+male_tawny_wav <- readWave("tawny_audio/Strixaluco-male_197132.wav")
+male_tawny_wav
 
+oscillo(male_tawny_wav)
+
+oscillo(male_tawny_wav, from = 0.59, to = 0.60)
 
 
 
