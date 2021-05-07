@@ -220,6 +220,95 @@ ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
 
 
 
+#Specify the type of data you wish to obtain. Here, song thrush (Turdus philomelos) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
+robin_songs <- query_xc(qword = 'Erithacus rubecula  type:song len:5-25', download = FALSE)
+
+robin_alarm <- query_xc(qword = 'Erithacus rubecula  type:alarm len:5-25', download = FALSE)
+
+
+
+#Map for the song thrush data points
+map_xc(robin_songs, leaflet.map = TRUE)
+
+# # Create subfolders in your RStudio Project for song calls and alarm calls
+dir.create(file.path("robin_songs"))
+dir.create(file.path("robin_alarm"))
+#
+# # Download the .MP3 files into two separate sub-folders
+query_xc(X = robin_songs, path="robin_songs")
+query_xc(X = robin_alarm, path="robin_alarm")
+
+
+# Rename song thrush files ----
+# library(stringr) # part of tidyverse
+# 
+old_files <- list.files("robin_songs", full.names=TRUE)
+new_files <- NULL
+for(file in 1:length(old_files)){
+   curr_file <- str_split(old_files[file], "-")
+   new_name  <- str_c(c(curr_file[[1]][1:2], "-song_", curr_file[[1]][3]), collapse="")
+   new_files <- c(new_files, new_name)
+}
+file.rename(old_files, new_files)
+
+old_files <- list.files("robin_alarm", full.names=TRUE)
+new_files <- NULL
+for(file in 1:length(old_files)){
+   curr_file <- str_split(old_files[file], "-")
+   new_name  <- str_c(c(curr_file[[1]][1:2], "-alarm_", curr_file[[1]][3]), collapse="")
+   new_files <- c(new_files, new_name)
+}
+file.rename(old_files, new_files)
+
+# Put song thrush files into appropriate folders 
+dir.create(file.path("robin_audio"))
+file.copy(from=paste0("robin_songs/",list.files("robin_songs")),
+          to="robin_audio")
+file.copy(from=paste0("robin_alarm/",list.files("robin_alarm")),
+          to="robin_audio")
+
+# Convert to .WAV format and delete old mp3
+mp32wav(path="robin_audio", dest.path="robin_audio")
+unwanted_mp3 <- dir(path="robin_audio", pattern="*.mp3")
+file.remove(paste0("robin_audio/", unwanted_mp3))
+
+
+robin_wav <- readWave("robin_audio/Turdusphilomelos-song_297816.wav")
+robin_wav
+
+# Oscillogram and spectrogram for robin song example
+# Oscillogram
+oscillo(robin_wav)
+oscillo(robin_wav, from = 0.59, to = 0.60)
+# Spectrogram for song thrush
+SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_297816.wav",
+                  Colors = "Colors")
+
+robin2_wav <- readWave("robin_audio/Erithacus rubecula-alarm_152372.wav")
+robin2_wav
+
+# Oscillogram and spectrogram for robin song example
+# Oscillogram
+oscillo(robin2_wav)
+oscillo(robin2_wav, from = 0.59, to = 0.60)
+# Spectrogram for song thrush
+SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
+                  Colors = "Colors")
+
+# Feature extraction for robins via MFCC and PCA ####
+robin_mfcc <- MFCCFunction(input.dir = "robin_audio",
+                           max.freq=7000)
+dim(robin_mfcc)
+robin_pca <- ordi_pca(robin_mfcc[, -1], scale=TRUE)
+summary(robin_pca)$cont[[1]][1:3,1:4]
+
+# Plot PCA scores
+robin_sco <- ordi_scores(robin_pca, display="sites")
+robin_sco <- mutate(robin_sco, group_code = robin_mfcc$Class)
+
+ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+   geom_point() 
+
 
 
 
