@@ -103,13 +103,13 @@ ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
 
 
 
-# Complete the same indices but for song thrushes but comparing song and alarm calls rather than differences between genders
+# Complete the same indices but for wrens and wood pigeons but comparing song and alarm calls rather than differences between genders
 
-#Specify the type of data you wish to obtain. Here, song thrush (Turdus philomelos) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
+#Specify the type of data you wish to obtain. Here, wrens (Troglodytes troglodytes) song call data is being compared with wood pigeon (Columba palumbus), with length of audio clip being 5-25 seconds
 wren_songs       <- query_xc(qword = 'Troglodytes troglodytes cnt:"united kingdom" type:song len:5-25', download = FALSE)
 woodpigeon_songs <- query_xc(qword = 'Columba palumbus cnt:"united kingdom" type:song len:5-25', download = FALSE)
 
-# Map for the song thrush data points
+# Map for the wren data points
 map_xc(wren_songs, leaflet.map = TRUE)
 
 # Create subfolders in your RStudio Project for song calls and alarm calls
@@ -139,7 +139,7 @@ for(file in 1:length(old_files)){
 }
 file.rename(old_files, new_files)
 
-# Put song thrush files into appropriate folders 
+#Compile the wren and the wood pigeon data into one folder called 'bird_audio' 
 dir.create(file.path("bird_audio"))
 file.copy(from=paste0("wren_songs/",list.files("wren_songs")),
           to="bird_audio")
@@ -151,15 +151,14 @@ mp32wav(path="bird_audio", dest.path="bird_audio")
 unwanted_mp3 <- dir(path="bird_audio", pattern="*.mp3")
 file.remove(paste0("bird_audio/", unwanted_mp3))
 
-
 wren_wav <- readWave("bird_audio/Troglodytestroglodytes-song_447467.wav")
 wren_wav
 
-# Oscillogram and spectrogram for song thrush song example
+# Oscillogram and spectrogram for a clear example of a song call of a wren
 # Oscillogram
 oscillo(wren_wav)
 oscillo(wren_wav, from = 0.59, to = 0.60)
-# Spectrogram for song thrush
+# Spectrogram for wren
 SpectrogramSingle(sound.file = "bird_audio/Troglodytestroglodytes-song_447467.wav",
                   Colors = "Colors")
 
@@ -167,15 +166,15 @@ SpectrogramSingle(sound.file = "bird_audio/Troglodytestroglodytes-song_447467.wa
 woodpigeon_wav <- readWave("bird_audio/Columbapalumbus-song_235149.wav")
 woodpigeon_wav
 
-# Oscillogram and spectrogram for song thrush song example
+# Oscillogram and spectrogram for a clear example of a song call of a wood pigeon
 # Oscillogram
 oscillo(woodpigeon_wav)
 oscillo(woodpigeon_wav, from = 0.59, to = 0.60)
-# Spectrogram for song thrush
+# Spectrogram for wood pigeon
 SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
                   Colors = "Colors")
 
-# Feature extraction for song thrushes via MFCC and PCA ####
+# Feature extraction for the wren and wood pigeon via MFCC and PCA ####
 bird_mfcc <- MFCCFunction(input.dir = "bird_audio",
                                 max.freq=7000)
 dim(bird_mfcc)
@@ -191,11 +190,11 @@ ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
 
 
 
-#Specify the type of data you wish to obtain. Here, song thrush (Turdus philomelos) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
+#Specify the type of data you wish to obtain. Here, the European robin (Erithacus rubecula) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
 robin_songs <- query_xc(qword = 'Erithacus rubecula  type:song len:5-25', download = FALSE)
 robin_alarm <- query_xc(qword = 'Erithacus rubecula  type:alarm len:5-25', download = FALSE)
 
-#Map for the song thrush data points
+#Map for the robin data points
 map_xc(robin_songs, leaflet.map = TRUE)
 
 # Create subfolders in your RStudio Project for song calls and alarm calls
@@ -244,7 +243,7 @@ robin_wav
 # Oscillogram
 oscillo(robin_wav)
 oscillo(robin_wav, from = 0.59, to = 0.60)
-# Spectrogram for song thrush
+# Spectrogram for the robin song call
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_297816.wav",
                   Colors = "Colors")
 
@@ -255,7 +254,7 @@ robin2_wav
 # Oscillogram
 oscillo(robin2_wav)
 oscillo(robin2_wav, from = 0.59, to = 0.60)
-# Spectrogram for robin
+# Spectrogram for robin alarm call
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
                   Colors = "Colors")
 
