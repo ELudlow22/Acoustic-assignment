@@ -11,27 +11,24 @@ source("nes8010.R")
 
 
 
-#Specify the type of data you wish to obtain. Here, tawny owl (Strix aluco) song call data is being obtained for both male and female, with length of audio clip being 5-25 seconds
-
+# Specify the type of data you wish to obtain. Here, tawny owl (Strix aluco) song call data is being obtained for both male and female, with length of audio clip being 5-25 seconds
 tawny_male <- query_xc(qword = 'Strix aluco type:male len:5-25', download = FALSE)
 tawny_fem  <- query_xc(qword = 'Strix aluco type:female len:5-25', download = FALSE)
 
-
-#Filter out any records that have the word 'female' in as this word encompasses 'male' therefore would lead to a duplication of results
+# Filter out any records that have the word 'female' in as this word encompasses 'male' therefore would lead to a duplication of results
 tawny_male1 <- tawny_male %>% 
    filter(!(grepl("female", Vocalization_type)))
 
-#View where the data for the records have been obtained and who by
+# View where the data for the records have been obtained and who by
 map_xc(tawny_male1, leaflet.map = TRUE)
 
-#Create subfolders in your RStudio Project for male and female song calls
+# Create subfolders in your RStudio Project for male and female song calls
 dir.create(file.path("tawny_male1"))
 dir.create(file.path("tawny_fem"))
 
-#Download the .MP3 files into two separate sub-folders
+# Download the .MP3 files into two separate sub-folders
 query_xc(X = tawny_male1, path="tawny_male1")
 query_xc(X = tawny_fem, path="tawny_fem")
-
 
 
 old_files <- list.files("tawny_male1", full.names=TRUE)
@@ -52,37 +49,33 @@ for(file in 1:length(old_files)){
 }
 file.rename(old_files, new_files)
 
-
-# Put the tawy owl audio clips into appropriate folders
+# Put the tawny owl audio clips into appropriate folders
 dir.create(file.path("tawny_audio"))
 file.copy(from=paste0("tawny_male1/",list.files("tawny_male1")),
           to="tawny_audio")
 file.copy(from=paste0("tawny_fem/",list.files("tawny_fem")),
           to="tawny_audio")
 
-
 # Convert to .WAV format and delete old mp3
 mp32wav(path="tawny_audio", dest.path="tawny_audio")
 unwanted_mp3 <- dir(path="tawny_audio", pattern="*.mp3")
 file.remove(paste0("tawny_audio/", unwanted_mp3))
 
-
 #After listening to the audio clips, read in one that is suitable, displaying the call loudly and clearly
 tawny_male1_wav <- readWave("tawny_audio/Strixaluco-male1_506715.wav")
 tawny_male1_wav
 
-#Use the oscillo function to display an oscillogram for the above audio clip
+# Use the oscillo function to display an oscillogram for the above audio clip
 oscillo(tawny_male1_wav)
 
-#Change this at a later point to make sure it lines up with female
+# Change this at a later point to make sure it lines up with female
 oscillo(tawny_male1_wav, from = 0.59, to = 0.60)
 
-#A spectrogram can also be displayed for the same file
+# A spectrogram can also be displayed for the same file
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
                   Colors = "Colors")
 
-
-#Complete the same instructions for a female audio clip to show a contrast in the sounds
+# Complete the same instructions for a female audio clip to show a contrast in the sounds
 tawny_fem_wav <- readWave("tawny_audio/Strixaluco-fem_343923.wav")
 tawny_fem_wav
 
@@ -90,10 +83,8 @@ oscillo(tawny_fem_wav)
 
 oscillo(tawny_fem_wav, from = 0.59, to = 0.60)
 
-
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
                   Colors = "Colors")
-
 
 # Feature extraction for tawny owls via MFCC and PCA
 tawny_mfcc <- MFCCFunction(input.dir = "tawny_audio",
@@ -106,43 +97,30 @@ summary(tawny_pca)$cont[[1]][1:3,1:4]
 tawny_sco <- ordi_scores(tawny_pca, display="sites")
 tawny_sco <- mutate(tawny_sco, group_code = tawny_mfcc$Class)
 
-
 ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
 
-#Complete the same indices but for song thrushes but comparing song and alarm calls rather than differences between genders
 
-
-
-
-
-
-
+# Complete the same indices but for song thrushes but comparing song and alarm calls rather than differences between genders
 
 #Specify the type of data you wish to obtain. Here, song thrush (Turdus philomelos) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
-wren_songs <- query_xc(qword = 'Troglodytes troglodytes cnt:"united kingdom" type:song len:5-25', download = FALSE)
-
+wren_songs       <- query_xc(qword = 'Troglodytes troglodytes cnt:"united kingdom" type:song len:5-25', download = FALSE)
 woodpigeon_songs <- query_xc(qword = 'Columba palumbus cnt:"united kingdom" type:song len:5-25', download = FALSE)
 
-
-
-#Map for the song thrush data points
+# Map for the song thrush data points
 map_xc(wren_songs, leaflet.map = TRUE)
 
-# # Create subfolders in your RStudio Project for song calls and alarm calls
+# Create subfolders in your RStudio Project for song calls and alarm calls
 dir.create(file.path("wren_songs"))
 dir.create(file.path("woodpigeon_songs"))
-#
-# # Download the .MP3 files into two separate sub-folders
+
+# Download the .MP3 files into two separate sub-folders
 query_xc(X = wren_songs, path="wren_songs")
 query_xc(X = woodpigeon_songs, path="woodpigeon_songs")
 
-
-# Rename song thrush files ----
-# library(stringr) # part of tidyverse
-# 
+# Rename wren and wood pigeon files
 old_files <- list.files("wren_songs", full.names=TRUE)
 new_files <- NULL
 for(file in 1:length(old_files)){
@@ -197,7 +175,6 @@ oscillo(woodpigeon_wav, from = 0.59, to = 0.60)
 SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
                   Colors = "Colors")
 
-
 # Feature extraction for song thrushes via MFCC and PCA ####
 bird_mfcc <- MFCCFunction(input.dir = "bird_audio",
                                 max.freq=7000)
@@ -214,34 +191,22 @@ ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
 
 
 
-
-
-
-
-
-
 #Specify the type of data you wish to obtain. Here, song thrush (Turdus philomelos) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
 robin_songs <- query_xc(qword = 'Erithacus rubecula  type:song len:5-25', download = FALSE)
-
 robin_alarm <- query_xc(qword = 'Erithacus rubecula  type:alarm len:5-25', download = FALSE)
-
-
 
 #Map for the song thrush data points
 map_xc(robin_songs, leaflet.map = TRUE)
 
-# # Create subfolders in your RStudio Project for song calls and alarm calls
+# Create subfolders in your RStudio Project for song calls and alarm calls
 dir.create(file.path("robin_songs"))
 dir.create(file.path("robin_alarm"))
-#
-# # Download the .MP3 files into two separate sub-folders
+
+# Download the .MP3 files into two separate sub-folders
 query_xc(X = robin_songs, path="robin_songs")
 query_xc(X = robin_alarm, path="robin_alarm")
 
-
-# Rename song thrush files ----
-# library(stringr) # part of tidyverse
-# 
+# Rename robin files 
 old_files <- list.files("robin_songs", full.names=TRUE)
 new_files <- NULL
 for(file in 1:length(old_files)){
@@ -260,7 +225,7 @@ for(file in 1:length(old_files)){
 }
 file.rename(old_files, new_files)
 
-# Put song thrush files into appropriate folders 
+# Put robin files into appropriate folders 
 dir.create(file.path("robin_audio"))
 file.copy(from=paste0("robin_songs/",list.files("robin_songs")),
           to="robin_audio")
@@ -271,7 +236,6 @@ file.copy(from=paste0("robin_alarm/",list.files("robin_alarm")),
 mp32wav(path="robin_audio", dest.path="robin_audio")
 unwanted_mp3 <- dir(path="robin_audio", pattern="*.mp3")
 file.remove(paste0("robin_audio/", unwanted_mp3))
-
 
 robin_wav <- readWave("robin_audio/Turdusphilomelos-song_297816.wav")
 robin_wav
@@ -291,7 +255,7 @@ robin2_wav
 # Oscillogram
 oscillo(robin2_wav)
 oscillo(robin2_wav, from = 0.59, to = 0.60)
-# Spectrogram for song thrush
+# Spectrogram for robin
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
                   Colors = "Colors")
 
