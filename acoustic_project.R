@@ -11,91 +11,93 @@ source("nes8010.R")
 
 
 
-
+#Specify the type of data you wish to obtain. Here, tawny owl (Strix aluco) song call data is being obtained for both male and female, with length of audio clip being 
 
 tawny_male <- query_xc(qword = 'Strix aluco type:male len:5-25', download = FALSE)
-tawny_female <- query_xc(qword = 'Strix aluco type:female len:5-25', download = FALSE)
-
-map_xc(tawny_male, leaflet.map = TRUE)
-
-# # Create subfolders in your RStudio Project for song calls and alarm calls
-dir.create(file.path("tawny_male"))
-dir.create(file.path("tawny_female"))
-#
-# # Download the .MP3 files into two separate sub-folders
-query_xc(X = tawny_male, path="tawny_male")
-query_xc(X = tawny_female, path="tawny_female")
+tawny_fem  <- query_xc(qword = 'Strix aluco type:female len:5-25', download = FALSE)
 
 
+#Filter out any records that have the word 'female' in as this word encompasses 'male' therefore would lead to a duplication of results
+tawny_male1 <- tawny_male %>% 
+   filter(!(grepl("female", Vocalization_type)))
 
-#
- old_files <- list.files("tawny_male", full.names=TRUE)
- new_files <- NULL
- for(file in 1:length(old_files)){
+#View where the data for the records have been obtained and who by
+map_xc(tawny_male1, leaflet.map = TRUE)
+
+#Create subfolders in your RStudio Project for male and female song calls
+dir.create(file.path("tawny_male1"))
+dir.create(file.path("tawny_fem"))
+
+#Download the .MP3 files into two separate sub-folders
+query_xc(X = tawny_male1, path="tawny_male1")
+query_xc(X = tawny_fem, path="tawny_fem")
+
+
+
+old_files <- list.files("tawny_male1", full.names=TRUE)
+new_files <- NULL
+for(file in 1:length(old_files)){
    curr_file <- str_split(old_files[file], "-")
-   new_name <- str_c(c(curr_file[[1]][1:2], "-male_", curr_file[[1]][3]), collapse="")
+   new_name  <- str_c(c(curr_file[[1]][1:2], "-male1_", curr_file[[1]][3]), collapse="")
    new_files <- c(new_files, new_name)
- }
- file.rename(old_files, new_files)
+}
+file.rename(old_files, new_files)
 
- old_files <- list.files("tawny_female", full.names=TRUE)
- new_files <- NULL
- for(file in 1:length(old_files)){
+old_files <- list.files("tawny_fem", full.names=TRUE)
+new_files <- NULL
+for(file in 1:length(old_files)){
    curr_file <- str_split(old_files[file], "-")
-   new_name <- str_c(c(curr_file[[1]][1:2], "-female_", curr_file[[1]][3]), collapse="")
+   new_name  <- str_c(c(curr_file[[1]][1:2], "-fem_", curr_file[[1]][3]), collapse="")
    new_files <- c(new_files, new_name)
- }
- file.rename(old_files, new_files)
+}
+file.rename(old_files, new_files)
 
-# Put blackbird files into appropriate folders ----
+
+# Put the tawy owl audio clips into appropriate folders
 dir.create(file.path("tawny_audio"))
- file.copy(from=paste0("tawny_male/",list.files("tawny_male")),
-           to="tawny_audio")
- file.copy(from=paste0("tawny_female/",list.files("tawny_female")),
-           to="tawny_audio")
+file.copy(from=paste0("tawny_male1/",list.files("tawny_male1")),
+          to="tawny_audio")
+file.copy(from=paste0("tawny_fem/",list.files("tawny_fem")),
+          to="tawny_audio")
+
 
 # Convert to .WAV format and delete old mp3
- mp32wav(path="tawny_audio", dest.path="tawny_audio")
- unwanted_mp3 <- dir(path="tawny_audio", pattern="*.mp3")
- file.remove(paste0("tawny_audio/", unwanted_mp3))
+mp32wav(path="tawny_audio", dest.path="tawny_audio")
+unwanted_mp3 <- dir(path="tawny_audio", pattern="*.mp3")
+file.remove(paste0("tawny_audio/", unwanted_mp3))
 
 
+#After listening to the audio clips, read in one that is suitable, displaying the call loudly and clearly
+tawny_male1_wav <- readWave("tawny_audio/Strixaluco-male1_506715.wav")
+tawny_male1_wav
 
-
-tawny_male_wav <- readWave("tawny_audio/Strixaluco-male_506715.wav")
-tawny_male_wav
-
-oscillo(tawny_male_wav)
+#Use the oscillo function to display an oscillogram for the above audio clip
+oscillo(tawny_male1_wav)
 
 #Change this at a later point to make sure it lines up with female
-oscillo(tawny_male_wav, from = 0.59, to = 0.60)
+oscillo(tawny_male1_wav, from = 0.59, to = 0.60)
 
-
-SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male_506715.wav",
+#A spectrogram can also be displayed for the same file
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
                   Colors = "Colors")
 
 
+#Complete the same instructions for a female audio clip to show a contrast in the sounds
+tawny_fem_wav <- readWave("tawny_audio/Strixaluco-fem_343923.wav")
+tawny_fem_wav
+
+oscillo(tawny_fem_wav)
+
+oscillo(tawny_fem_wav, from = 0.59, to = 0.60)
 
 
-
-
-tawny_female_wav <- readWave("tawny_audio2/Strixaluco-female_343923.wav")
-tawny_female_wav
-
-oscillo(tawny_female_wav)
-
-oscillo(tawny_female_wav, from = 0.59, to = 0.60)
-
-
-SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-female_343923.wav",
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
                   Colors = "Colors")
 
 
-
-
-# Feature extraction for blackbirds via MFCC and PCA ####
+# Feature extraction for tawny owls via MFCC and PCA
 tawny_mfcc <- MFCCFunction(input.dir = "tawny_audio",
-                               max.freq=7000)
+                           max.freq=7000)
 dim(tawny_mfcc)
 tawny_pca <- ordi_pca(tawny_mfcc[, -1], scale=TRUE)
 summary(tawny_pca)$cont[[1]][1:3,1:4]
@@ -104,7 +106,14 @@ summary(tawny_pca)$cont[[1]][1:3,1:4]
 tawny_sco <- ordi_scores(tawny_pca, display="sites")
 tawny_sco <- mutate(tawny_sco, group_code = tawny_mfcc$Class)
 
+
 ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
-  geom_point() 
+   geom_point() 
+
+
+
+
+
+
 
 
