@@ -67,10 +67,6 @@ tawny_male1_wav
 
 # Use the oscillo function to display an oscillogram for the above audio clip
 oscillo(tawny_male1_wav)
-
-# Change this at a later point to make sure it lines up with female
-oscillo(tawny_male1_wav, from = 0.59, to = 0.60)
-
 # A spectrogram can also be displayed for the same file
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
                   Colors = "Colors")
@@ -80,9 +76,6 @@ tawny_fem_wav <- readWave("tawny_audio/Strixaluco-fem_343923.wav")
 tawny_fem_wav
 
 oscillo(tawny_fem_wav)
-
-oscillo(tawny_fem_wav, from = 0.59, to = 0.60)
-
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
                   Colors = "Colors")
 
@@ -97,7 +90,7 @@ summary(tawny_pca)$cont[[1]][1:3,1:4]
 tawny_sco <- ordi_scores(tawny_pca, display="sites")
 tawny_sco <- mutate(tawny_sco, group_code = tawny_mfcc$Class)
 
-ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
@@ -185,7 +178,7 @@ summary(bird_pca)$cont[[1]][1:3,1:4]
 bird_sco <- ordi_scores(bird_pca, display="sites")
 bird_sco <- mutate(bird_sco, group_code = bird_mfcc$Class)
 
-ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
@@ -236,7 +229,7 @@ mp32wav(path="robin_audio", dest.path="robin_audio")
 unwanted_mp3 <- dir(path="robin_audio", pattern="*.mp3")
 file.remove(paste0("robin_audio/", unwanted_mp3))
 
-robin_wav <- readWave("robin_audio/Turdusphilomelos-song_297816.wav")
+robin_wav <- readWave("robin_audio/Erithacusrubecula-song_299253.wav")
 robin_wav
 
 # Oscillogram and spectrogram for robin song example
@@ -244,10 +237,10 @@ robin_wav
 oscillo(robin_wav)
 oscillo(robin_wav, from = 0.59, to = 0.60)
 # Spectrogram for the robin song call
-SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_297816.wav",
+SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_299253.wav",
                   Colors = "Colors")
 
-robin2_wav <- readWave("robin_audio/Erithacus rubecula-alarm_152372.wav")
+robin2_wav <- readWave("robin_audio/Erithacusrubecula-alarm_152372.wav")
 robin2_wav
 
 # Oscillogram and spectrogram for robin song example
@@ -257,6 +250,7 @@ oscillo(robin2_wav, from = 0.59, to = 0.60)
 # Spectrogram for robin alarm call
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
                   Colors = "Colors")
+
 
 # Feature extraction for robins via MFCC and PCA ####
 robin_mfcc <- MFCCFunction(input.dir = "robin_audio",
@@ -269,10 +263,55 @@ summary(robin_pca)$cont[[1]][1:3,1:4]
 robin_sco <- ordi_scores(robin_pca, display="sites")
 robin_sco <- mutate(robin_sco, group_code = robin_mfcc$Class)
 
-ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
+if(!require(devtools)) install.packages("devtools")
+devtools::install_github("kassambara/ggpubr")
+install.packages("ggpubr")
+library(ggpubr)
 
 
 
+
+
+a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+   geom_point() 
+a
+b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+   geom_point()
+b
+c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
+   geom_point()
+c
+
+
+ggarrange(a, b, c + rremove("x.text"), 
+          labels = c("A", "B", "C"),
+          ncol = 2, nrow = 2)
+
+par(mfrow = c(2, 2))
+oscillo(tawny_male1_wav)
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
+                  Colors = "Colors")
+oscillo(tawny_fem_wav)
+SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
+                  Colors = "Colors")
+
+
+
+oscillo(wren_wav)
+SpectrogramSingle(sound.file = "bird_audio/Troglodytestroglodytes-song_447467.wav",
+                  Colors = "Colors")
+oscillo(woodpigeon_wav)
+SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
+                  Colors = "Colors")
+
+
+oscillo(robin_wav)
+SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_299253.wav",
+                  Colors = "Colors")
+oscillo(robin2_wav)
+SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
+                  Colors = "Colors")
