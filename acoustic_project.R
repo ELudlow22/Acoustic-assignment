@@ -292,26 +292,27 @@ ggarrange(a, b, c + rremove("x.text"),
           ncol = 2, nrow = 2)
 
 par(mfrow = c(2, 2))
-oscillo(tawny_male1_wav)
+oscillo(tawny_male1_wav, title = "Male Tawny Owl Song Call Oscillogram")
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
-                  Colors = "Colors")
-oscillo(tawny_fem_wav)
+                  Colors = "Colors")%>% title("Male Tawny Owl Song Call Spectrogram")
+oscillo(tawny_fem_wav, title = "Female Tawny Owl Song Call Oscillogram")
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
-                  Colors = "Colors")
+                  Colors = "Colors") %>% title("Female Tawny Owl Song Call Spectrogram")
 
 
 
-oscillo(wren_wav)
+
+oscillo(wren_wav, title = "Wren Song Call Oscillogram")
 SpectrogramSingle(sound.file = "bird_audio/Troglodytestroglodytes-song_447467.wav",
-                  Colors = "Colors")
-oscillo(woodpigeon_wav)
+                  Colors = "Colors") %>% title("Wren Song Call Spectrogram")
+oscillo(woodpigeon_wav, title = "Wood Pigeon Song Call Oscillogram")
 SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
-                  Colors = "Colors")
+                  Colors = "Colors") %>% title("Wood Pigeon Song Call Spectrogram")
 
 
-oscillo(robin_wav)
+oscillo(robin_wav, title = "Robin Song Call Oscillogram")
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_299253.wav",
-                  Colors = "Colors")
-oscillo(robin2_wav)
+                  Colors = "Colors") %>% title("Robin Song Call Spectrogram")
+oscillo(robin2_wav, title = "Robin Alarm Call Oscillogram")
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
-                  Colors = "Colors")
+                  Colors = "Colors") %>% title("Robin Alarm Call Spectrogram")
