@@ -278,16 +278,21 @@ library(ggpubr)
 # Additional plots showing multiple figures from the above script in one place to provide an easier comparison ####
 
 # Show each PCA plot in one figure
-a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
-   geom_point() 
+# Layer on a 95% confidence elipse
+a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+   stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
+   geom_point(shape = 21, col = "black")
 a
 
-b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
-   geom_point()
+b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+   stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
+geom_point(shape = 21, col = "black") 
+ 
 b
 
-c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
-   geom_point()
+c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+   stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
+   geom_point(shape = 21, col = "black")
 c
 
 ggarrange(a, b, c + rremove("x.text"), 
