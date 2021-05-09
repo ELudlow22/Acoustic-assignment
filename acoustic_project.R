@@ -1,3 +1,4 @@
+#Load the relevant libraries ####
 
 library(ggplot2)
 library(behaviouR)
@@ -9,7 +10,7 @@ library(vegan)
 library(stringr)
 source("nes8010.R")
 
-
+# Tawny Owl Data ####
 
 # Specify the type of data you wish to obtain. Here, tawny owl (Strix aluco) song call data is being obtained for both male and female, with length of audio clip being 5-25 seconds
 tawny_male <- query_xc(qword = 'Strix aluco type:male len:5-25', download = FALSE)
@@ -94,7 +95,7 @@ a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
-
+#Wren and Wood Pigeon Data ####
 
 # Complete the same indices but for wrens and wood pigeons but comparing song and alarm calls rather than differences between genders
 
@@ -167,7 +168,7 @@ oscillo(woodpigeon_wav, from = 0.59, to = 0.60)
 SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
                   Colors = "Colors")
 
-# Feature extraction for the wren and wood pigeon via MFCC and PCA ####
+# Feature extraction for the wren and wood pigeon via MFCC and PCA
 bird_mfcc <- MFCCFunction(input.dir = "bird_audio",
                                 max.freq=7000)
 dim(bird_mfcc)
@@ -182,6 +183,7 @@ b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
+# Robin Data ####
 
 #Specify the type of data you wish to obtain. Here, the European robin (Erithacus rubecula) song call data is being obtained for both song and alarm calls, with length of audio clip being 5-25 seconds
 robin_songs <- query_xc(qword = 'Erithacus rubecula  type:song len:5-25', download = FALSE)
@@ -252,7 +254,7 @@ SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
                   Colors = "Colors")
 
 
-# Feature extraction for robins via MFCC and PCA ####
+# Feature extraction for robins via MFCC and PCA
 robin_mfcc <- MFCCFunction(input.dir = "robin_audio",
                            max.freq=7000)
 dim(robin_mfcc)
@@ -273,46 +275,55 @@ install.packages("ggpubr")
 library(ggpubr)
 
 
+# Additional plots showing multiple figures from the above script in one place to provide an easier comparison ####
 
-
-
+# Show each PCA plot in one figure
 a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 a
+
 b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point()
 b
+
 c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point()
 c
-
 
 ggarrange(a, b, c + rremove("x.text"), 
           labels = c("A", "B", "C"),
           ncol = 2, nrow = 2)
 
+# Show each oscillogram and the corresponding spectrograms side by side
 par(mfrow = c(2, 2))
 oscillo(tawny_male1_wav, title = "Male Tawny Owl Song Call Oscillogram")
+
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
                   Colors = "Colors")%>% title("Male Tawny Owl Song Call Spectrogram")
+
 oscillo(tawny_fem_wav, title = "Female Tawny Owl Song Call Oscillogram")
+
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-fem_343923.wav",
                   Colors = "Colors") %>% title("Female Tawny Owl Song Call Spectrogram")
 
 
-
-
 oscillo(wren_wav, title = "Wren Song Call Oscillogram")
+
 SpectrogramSingle(sound.file = "bird_audio/Troglodytestroglodytes-song_447467.wav",
                   Colors = "Colors") %>% title("Wren Song Call Spectrogram")
+
 oscillo(woodpigeon_wav, title = "Wood Pigeon Song Call Oscillogram")
+
 SpectrogramSingle(sound.file = "bird_audio/Columbapalumbus-song_235149.wav",
                   Colors = "Colors") %>% title("Wood Pigeon Song Call Spectrogram")
 
 
 oscillo(robin_wav, title = "Robin Song Call Oscillogram")
+
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-song_299253.wav",
                   Colors = "Colors") %>% title("Robin Song Call Spectrogram")
+
 oscillo(robin2_wav, title = "Robin Alarm Call Oscillogram")
+
 SpectrogramSingle(sound.file = "robin_audio/Erithacusrubecula-alarm_152372.wav",
                   Colors = "Colors") %>% title("Robin Alarm Call Spectrogram")
