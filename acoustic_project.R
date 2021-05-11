@@ -94,6 +94,8 @@ tawny_sco <- mutate(tawny_sco, group_code = tawny_mfcc$Class)
 a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
+a
+
 
 #Wren and Wood Pigeon Data ####
 
@@ -269,31 +271,60 @@ c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code)) +
    geom_point() 
 
 
+# Install and load packages to run multiple plots in one figure
 if(!require(devtools)) install.packages("devtools")
 devtools::install_github("kassambara/ggpubr")
 install.packages("ggpubr")
 library(ggpubr)
 
-
 # Additional plots showing multiple figures from the above script in one place to provide an easier comparison ####
+
+tawny_sco <- mutate(tawny_sco, new_group = if_else(group_code == "Strixaluco-fem", "Female Tawny Owl", "Male Tawny Owl"))
 
 # Show each PCA plot in one figure
 # Layer on a 95% confidence elipse
-a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+a <- ggplot(tawny_sco, aes(x=PC1, y=PC2, colour=new_group, fill = new_group)) +
+   xlab("Component 1 (19.3%)") + 
+   ylab("Component 2 (14.5%)")+
    stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
    geom_point(shape = 21, col = "black")
 a
 
+h <- a + scale_fill_discrete(name = "Song Calls",
+                             labels = c("Female Tawny Owl", "Male Tawny Owl")) +
+   theme_classic()
+
+h
+
+
+
 b <- ggplot(bird_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+   xlab("Component 1 (24.1%)") + 
+   ylab("Component 2 (17.2%)")+
    stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
-geom_point(shape = 21, col = "black") 
+   geom_point(shape = 21, col = "black") 
  
 b
 
+i <- b + scale_fill_discrete(name = "Song Calls",
+                             labels = c("Wren", "Wood Pigeon")) +
+   theme_classic()
+
+i
+
 c <- ggplot(robin_sco, aes(x=PC1, y=PC2, colour=group_code, fill = group_code)) +
+   xlab("Component 1 (18.5%)") + 
+   ylab("Component 2 (13.9%)")+
    stat_ellipse(geom = "polygon", col= "black", alpha = 0.5) +
    geom_point(shape = 21, col = "black")
 c
+
+j <- c + scale_fill_discrete(name = "Robin Calls",
+                             labels = c("Alarm", "Song")) +
+   theme_classic()
+
+j
+
 
 ggarrange(a, b, c + rremove("x.text"), 
           labels = c("A", "B", "C"),
@@ -301,6 +332,7 @@ ggarrange(a, b, c + rremove("x.text"),
 
 # Show each oscillogram and the corresponding spectrograms side by side
 par(mfrow = c(2, 2))
+
 oscillo(tawny_male1_wav, title = "Male Tawny Owl Song Call Oscillogram")
 
 SpectrogramSingle(sound.file = "tawny_audio/Strixaluco-male1_506715.wav",
